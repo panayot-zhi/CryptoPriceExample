@@ -24,6 +24,14 @@ namespace CryptoPriceExample.BL
                     .EnableDetailedErrors();
             });
 
+            using (var scope = services.BuildServiceProvider().CreateScope())
+            { 
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                context.Database.Migrate();
+                context.Database.CloseConnection();
+            }
+
             return services;
         }
     }

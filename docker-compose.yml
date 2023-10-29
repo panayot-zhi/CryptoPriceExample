@@ -1,8 +1,19 @@
 version: '3.4'
 
 services:
+  mysql:
+    image: mysql:8.0.34    
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
   cryptopriceexample.endpoint:
-    image: ${DOCKER_REGISTRY-}cryptopriceexampleendpoint
+    image: ${DOCKER_REGISTRY-}cryptopriceexampleendpoint    
+    depends_on:
+      - mysql
     build:
       context: .
       dockerfile: CryptoPriceExample.Endpoint/Dockerfile
+    volumes:
+      - ./wait-for-it.sh:/app/wait-for-it.sh
+    entrypoint: ["/app/wait-for-it.sh", "mysql:3306", "--timeout=60", "--", "dotnet", "CryptoPriceExample.Endpoint.dll"]

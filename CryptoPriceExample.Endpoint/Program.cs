@@ -17,6 +17,8 @@ public class Program
         var configSection = builder.Configuration.GetSection(nameof(RetrieveOptions));
         builder.Services.Configure<RetrieveOptions>(configSection);
 
+        builder.Services.AddHostedService<RetrieveService>();
+
         // Add services to the container.
         builder.Services.AddControllers(options =>
         {
