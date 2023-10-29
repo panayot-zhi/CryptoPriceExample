@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "24h": {
+      "commandName": "Project",
+      "commandLineArgs": "24h BTCUSDT"
+    },
+    "sma": {
+      "commandName": "Project",
+      "commandLineArgs": "sma BTCUSDT 10 1d 2021-12-15"
+    }
+  }
+}

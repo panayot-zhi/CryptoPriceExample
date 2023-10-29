@@ -8,13 +8,6 @@ namespace CryptoPriceExample.Models
 {
     public class RetrieveOptions
     {
-        public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(1);
-
-        public List<string> Symbols { get; set; } = new()
-        {
-            "BTCUSDT",
-            "ADAUSDT",
-            "ETHUSDT"
-        };
+        public List<string> Symbols { get; init; } = new();
     }
 }

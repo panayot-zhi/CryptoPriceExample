@@ -2,8 +2,9 @@ using Binance.Net;
 using CryptoPriceExample.BL;
 using CryptoPriceExample.DAL;
 using CryptoPriceExample.Endpoint.Services;
+using CryptoPriceExample.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace CryptoPriceExample.Endpoint;
 
@@ -13,10 +14,49 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddControllers();
+        var configSection = builder.Configuration.GetSection(nameof(RetrieveOptions));
+        builder.Services.Configure<RetrieveOptions>(configSection);
 
-        builder.Services.AddTransient<PricesService>();
+        // Add services to the container.
+        builder.Services.AddControllers(options =>
+        {
+            options.CacheProfiles.Add(CacheProfileNames.NoCache, new CacheProfile()
+            {
+                Duration = 0,
+                Location = ResponseCacheLocation.None,
+                NoStore = true
+            });
+
+            options.CacheProfiles.Add(CacheProfileNames.TenSeconds, new CacheProfile()
+            {
+                VaryByHeader = "Accept",
+                Duration = 10 // 10 seconds
+            });
+
+            options.CacheProfiles.Add(CacheProfileNames.OneMinute, new CacheProfile()
+            {
+                VaryByHeader = "Accept",
+                Duration = 60 // 1 Minute
+            });
+
+            options.CacheProfiles.Add(CacheProfileNames.TenMinutes, new CacheProfile()
+            {
+                VaryByHeader = "Accept",
+                Duration = 10 * 60 // 10 Minutes
+            });
+
+            options.CacheProfiles.Add(CacheProfileNames.OneHour, new CacheProfile()
+            {
+                VaryByHeader = "Accept",
+                Duration = 60 * 60 // 1 hour
+            });
+        })
+            .AddXmlSerializerFormatters()
+            .AddXmlDataContractSerializerFormatters();
+
+        builder.Services.AddResponseCaching();
+
+        builder.Services.AddServices(builder.Configuration);
 
         builder.Services.AddBinance(
             restOptions => {
@@ -25,28 +65,6 @@ public class Program
             socketClientOptions => {
                 // set options for the socket client
             });
-
-        // Replace with your connection string.
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        // Replace with your server version and type.
-        // Use 'MariaDbServerVersion' for MariaDB.
-        // Alternatively, use 'ServerVersion.AutoDetect(connectionString)'.
-        // For common usages, see pull request #1233.
-        var serverVersion = new MySqlServerVersion(new Version(8, 0, 34));
-
-        // Replace 'ApplicationDbContext' with the name of your own DbContext derived class.
-        builder.Services.AddDbContext<ApplicationDbContext>(
-            dbContextOptions => dbContextOptions
-                .UseMySql(connectionString, serverVersion)
-                // The following three options help with debugging, but should
-                // be changed or removed for production.
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()
-        );
-
-        builder.Services.AddHostedService<RetrieveService>();
 
         // Learn more about configuring Swagger/OpenAPI
         // at https://aka.ms/aspnetcore/swashbuckle

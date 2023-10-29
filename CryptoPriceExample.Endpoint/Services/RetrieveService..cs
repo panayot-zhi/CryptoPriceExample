@@ -28,11 +28,12 @@ namespace CryptoPriceExample.Endpoint.Services
             // var exchangeInfo = await _socketClient.SpotApi.ExchangeData.GetExchangeInfoAsync(_options.CurrentValue.Symbols);
             // _logger.LogInformation("ExchangeInfo for symbols: {@ExchangeInfo}",
             //     exchangeInfo);
-            //
+
+            // NOTE: A reasonable alternative here would be to obtain last trades for symbol over a certain interval and store them.
             // var recentTrades = await _socketClient.SpotApi.ExchangeData.GetRecentTradesAsync(_options.CurrentValue.Symbols.First());
             // _logger.LogInformation("RecentTrades for symbol ({Symbol}): {@ExchangeInfo}",
             //     _options.CurrentValue.Symbols.First(), recentTrades);
-            //
+            
             // _logger.LogInformation("Subscribing to Spot.TickerUpdates for the following symbols: {@Symbols}", 
             //     _options.CurrentValue.Symbols);
             //
