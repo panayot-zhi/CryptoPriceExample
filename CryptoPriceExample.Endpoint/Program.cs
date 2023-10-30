@@ -82,7 +82,8 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        // No HTTPS for you!
+        // app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
         app.Run();
