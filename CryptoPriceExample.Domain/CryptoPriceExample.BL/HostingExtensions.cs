@@ -15,8 +15,12 @@ namespace CryptoPriceExample.BL
             services.AddDbContext<ApplicationDbContext>((serviceProvider, dbContextOptions) =>
             {
                 var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
                 var serverVersion = new MySqlServerVersion(new Version(8, 0, 34));
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                if (Environment.GetEnvironmentVariable("USE_DATABASE") == "Local")
+                {
+                    connectionString = connectionString.Replace("mysql", "localhost");
+                }
 
                 dbContextOptions
                     .UseMySql(connectionString, serverVersion)
